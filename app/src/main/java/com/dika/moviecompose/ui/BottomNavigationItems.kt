@@ -11,7 +11,7 @@ sealed class BottomNavigationItems(
     val title: String? = null,
     val icon: ImageVector? = null
 ) {
-    object Screen1 : BottomNavigationItems(
+    object HomeScreen : BottomNavigationItems(
         route = "popular",
         title = "Popular",
         icon = Icons.Outlined.Home

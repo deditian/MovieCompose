@@ -19,7 +19,7 @@ fun Welcome(navController: NavHostController) {
     ) {
         Button(
             onClick = {
-                  navController.navigate(BottomNavigationItems.Screen1.route)
+//                  navController.navigate(BottomNavigationItems.HomeScreen.route)
             },
         ) {
             Text(
