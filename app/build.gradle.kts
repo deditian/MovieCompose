@@ -69,6 +69,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.25.1")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.25.1")
     implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation("dev.chrisbanes.haze:haze:0.9.0-alpha08")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
