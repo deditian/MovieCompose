@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.kapt)
+    alias(libs.plugins.hilt)
+
 }
 
 android {
@@ -21,7 +24,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField( "String", "API_KEY", "\"ce99ea84f89451260059c832125c6353\"")
+            buildConfigField( "String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField( "String", "IMG_URL", "\"https://image.tmdb.org/t/p/w500/\"")
+        }
         release {
+            buildConfigField( "String", "API_KEY", "\"ce99ea84f89451260059c832125c6353\"")
+            buildConfigField( "String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField( "String", "IMG_URL", "\"https://image.tmdb.org/t/p/w500/\"")
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -38,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -66,10 +79,24 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.navigation.compose)
 
-    implementation("com.google.accompanist:accompanist-pager:0.25.1")
-    implementation("com.google.accompanist:accompanist-pager-indicators:0.25.1")
-    implementation("io.coil-kt:coil-compose:2.3.0")
-    implementation("dev.chrisbanes.haze:haze:0.9.0-alpha08")
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
+    implementation(libs.coil.compose)
+    implementation(libs.haze)
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.converter.scalars)
+    implementation (libs.logging.interceptor)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.runtime.livedata)
+    annotationProcessor("com.google.dagger:hilt-compiler:2.46")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

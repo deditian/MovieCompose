@@ -1,8 +1,6 @@
-package com.dika.moviecompose.ui
+package com.dika.moviecompose.ui.home
 
-import android.provider.CalendarContract.Colors
 import android.util.Log
-import android.widget.Toolbar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -17,18 +15,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,31 +35,34 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarDefaults.largeTopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.dika.moviecompose.BuildConfig
 import com.dika.moviecompose.R
+import com.dika.moviecompose.model.Movie
+import com.dika.moviecompose.model.MovieRespone
+import com.dika.moviecompose.model.TvShow
+import com.dika.moviecompose.network.ApiResultHandler
+import com.dika.moviecompose.util.formatDate
+import com.dika.moviecompose.util.textMax
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -71,9 +71,14 @@ import kotlinx.coroutines.launch
 data class Item(val title: String, val imageRes: Int, val rating: Double)
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: HomeViewModel) {
+
+    LaunchedEffect(Unit) {
+        viewModel.getMovieNowPlaying()
+        viewModel.getTvPopular()
+    }
+
     val hazeState = remember { HazeState() }
     Scaffold(
         topBar = {
@@ -94,12 +99,7 @@ fun HomeScreen() {
                 .padding(it),
             color = MaterialTheme.colorScheme.background
         ) {
-            val scrollState = rememberScrollState()
-
-
-
-            Log.i("ScrollStateValue:", "current: ${scrollState.value}, max: ${scrollState.maxValue}")
-            HomeUI(scrollStates = scrollState)
+            HomeUI(viewModel)
         }
 
     }
@@ -108,7 +108,8 @@ fun HomeScreen() {
 }
 
 @Composable
-fun HomeUI(scrollStates : ScrollState){
+fun HomeUI(viewModel: HomeViewModel){
+
     val images = listOf(
         ImageData(R.drawable.ic_star_popular, "Image 1", 4.5),
         ImageData(R.drawable.ic_star_popular, "Image 2", 3.8),
@@ -149,7 +150,7 @@ fun HomeUI(scrollStates : ScrollState){
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(state = scrollStates)
+            .verticalScroll(state = rememberScrollState())
     ) {
 
         Spacer(modifier = Modifier.height(5.dp))
@@ -168,11 +169,13 @@ fun HomeUI(scrollStates : ScrollState){
 
 
         AutoImageSlider(
-            images = images,
+            viewModel = viewModel,
             onImageClick = { clickedImageIndex ->
                 println("Image clicked: Index $clickedImageIndex")
             }
         )
+
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -180,23 +183,13 @@ fun HomeUI(scrollStates : ScrollState){
             .fillMaxWidth()
             .height(230.dp)) {
             GridItemList(
-                items = items,
+                viewModel,
                 onItemClick = { selectedItem ->
                     println("Item clicked: ${selectedItem.title}")
                 }
             )
         }
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(230.dp)) {
-            GridItemList(
-                items = items,
-                onItemClick = { selectedItem ->
-                    println("Item clicked: ${selectedItem.title}")
-                }
-            )
-        }
 
     }
 }
@@ -215,7 +208,7 @@ fun MenuIcon(itemMenu: List<ItemMenu>) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(start = 16.dp)
-                    .height(100.dp),
+                    .height(115.dp),
             ) {
                 Box(
                     modifier = Modifier
@@ -263,7 +256,7 @@ fun ToolbarMe(
             },
             colors = TopAppBarDefaults.largeTopAppBarColors(Color.Transparent),
             modifier = Modifier
-                    .fillMaxWidth()
+                .fillMaxWidth()
                 .hazeChild(state = hazeState),
 
             actions = {
@@ -282,7 +275,6 @@ fun ToolbarMe(
 
             },
             navigationIcon = {
-                // Logo aplikasi di sebelah kiri
                 IconButton(onClick = onLogoClick) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_star_popular), // Ganti dengan logo aplikasi kamu
@@ -300,19 +292,11 @@ data class ImageData(val imageRes: Int, val title: String, val rating: Double)
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun AutoImageSlider(images: List<ImageData>, onImageClick: (Int) -> Unit) {
+fun AutoImageSlider(viewModel: HomeViewModel, onImageClick: (Int) -> Unit) {
     val pagerState = com.google.accompanist.pager.rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(3000)
-            coroutineScope.launch {
-                val nextPage = (pagerState.currentPage + 1) % images.size
-                pagerState.animateScrollToPage(nextPage)
-            }
-        }
-    }
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -342,38 +326,70 @@ fun AutoImageSlider(images: List<ImageData>, onImageClick: (Int) -> Unit) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Pager for images
-        HorizontalPager(
-            count = images.size,
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        ) { page ->
-            Image(
-                painter = painterResource(id = images[page].imageRes),
-                contentDescription = "Image $page",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable { onImageClick(page) },
-                contentScale = ContentScale.Crop
+
+
+        val movieResponse by viewModel.response.observeAsState()
+        movieResponse?.let { response ->
+            ApiResultHandler(
+                result = response,
+                onLoading = {
+                    CircularProgressIndicator()
+                },
+                onSuccess = {
+                    LaunchedEffect(Unit) {
+                        while (true) {
+                            delay(3000)
+                            coroutineScope.launch {
+                                val nextPage = (pagerState.currentPage + 1) % it!!.results.size
+                                pagerState.animateScrollToPage(nextPage)
+                            }
+                        }
+                    }
+
+                    val result = it?.results
+                    Log.e("TAG", "HomeScreen hasil:  ${it?.results}", )
+                    // Pager for images
+                    HorizontalPager(
+                        count = it!!.results.size,
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                    ) { page ->
+                        AsyncImage(
+                            model = "${BuildConfig.IMG_URL}${result?.get(page)?.backdrop_path}",
+                            contentDescription = result?.get(page)?.original_title,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                                .clickable { onImageClick(page) },
+                            contentScale = ContentScale.FillWidth
+                        )
+                    }
+
+                    // Title and Rating
+                    val currentImage = result?.get(pagerState.currentPage)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(top = 10.dp)
+                    ) {
+                        Text(text = currentImage!!.title, style = MaterialTheme.typography.bodyLarge)
+                        RatingStars(voteAverage = currentImage.vote_average)
+                        Text(text = "Release Date: ${formatDate(currentImage.release_date)}", style = MaterialTheme.typography.bodyMedium)
+                    }
+                },
+                onFailure = {
+                    Log.e("TAG", "HomeScreen failed:  ${it?.status_message}", )
+                }
             )
         }
 
-        // Title and Rating
-        val currentImage = images[pagerState.currentPage]
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text(text = currentImage.title, style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Rating: ${currentImage.rating}", style = MaterialTheme.typography.bodyMedium)
-        }
+
     }
 }
 
 @Composable
-fun GridItemList(items: List<Item>, onItemClick: (Item) -> Unit) {
+fun GridItemList(viewModel: HomeViewModel, onItemClick: (TvShow) -> Unit) {
     Column {
 
         Row(
@@ -398,34 +414,85 @@ fun GridItemList(items: List<Item>, onItemClick: (Item) -> Unit) {
 
         Spacer(modifier = Modifier.height(2.dp))
 
-        LazyHorizontalGrid(
-            rows = GridCells.Fixed(1),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(items) { item ->
-                GridItem(item = item, onClick = { onItemClick(item) })
-            }
+
+        val tvResponse by viewModel.responseTvPopular.observeAsState()
+        tvResponse?.let { response ->
+            ApiResultHandler(
+                result = response,
+                onLoading = {
+                    CircularProgressIndicator()
+                },
+                onSuccess = {
+                    Log.e("TAG", "GridItemList: ${it?.results}", )
+
+                    LazyHorizontalGrid(
+                        rows = GridCells.Fixed(1),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(it!!.results) { item ->
+                            GridItem(
+                                item = item,
+                                onClick = { onItemClick(item) })
+                        }
+                    }
+                },
+                onFailure = {
+
+                }
+            )
         }
+
     }
 }
 
 @Composable
-fun GridItem(item: Item, onClick: () -> Unit) {
+fun GridItem(item: TvShow, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .padding(8.dp)
             .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = item.imageRes),
+        AsyncImage(
+            model = "${BuildConfig.IMG_URL}${item.posterPath}",
             contentDescription = item.title,
             modifier = Modifier
                 .size(120.dp)
                 .padding(bottom = 8.dp),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillWidth
         )
-        Text(text = item.title)
-        Text(text = "Rating: ${item.rating}")
+        Log.e("TAG", "GridItem:COYY ${item.title}", )
+        Text(text = textMax(item.title!!), style = MaterialTheme.typography.bodyLarge)
+        RatingStars(voteAverage = item.voteAverage!!)
+    }
+}
+
+@Composable
+fun RatingStars(voteAverage: Float) {
+    val maxStars = 5
+    val filledStars = (voteAverage / 2).toInt() // Kalkulasi bintang yang diisi
+    val remainingStars = maxStars - filledStars // Sisa bintang yang tidak diisi
+
+    Row(
+        modifier = Modifier.padding(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(filledStars) {
+            Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = "Filled Star",
+                tint = Color.Cyan,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
+        repeat(remainingStars) {
+            Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = "Empty Star",
+                tint = Color.Gray,
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 }

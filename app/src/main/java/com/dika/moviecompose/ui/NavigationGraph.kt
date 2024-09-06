@@ -4,9 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.dika.moviecompose.ui.home.HomeScreen
+import com.dika.moviecompose.ui.home.HomeViewModel
 
 @Composable
-fun NavigationGraph(navController: NavHostController, onBottomBarVisibilityChanged: (Boolean) -> Unit) {
+fun NavigationGraph(homeViewModel: HomeViewModel, navController: NavHostController, onBottomBarVisibilityChanged: (Boolean) -> Unit) {
     NavHost(navController, startDestination = BottomNavigationItems.HomeScreen.route) {
 //        composable(Routes.Welcome.route) {
 //            onBottomBarVisibilityChanged(false)
@@ -14,7 +16,7 @@ fun NavigationGraph(navController: NavHostController, onBottomBarVisibilityChang
 //        }
         composable(BottomNavigationItems.HomeScreen.route) {
             onBottomBarVisibilityChanged(true)
-            HomeScreen()
+            HomeScreen(homeViewModel)
         }
         composable(BottomNavigationItems.Screen2.route) {
             onBottomBarVisibilityChanged(true)
