@@ -1,9 +1,10 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.kapt)
     alias(libs.plugins.hilt)
-
 }
 
 android {
@@ -17,6 +18,17 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val localProperties = Properties().apply {
+            val localPropertiesFile = rootProject.file("secrets.properties")
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.inputStream().use { load(it) }
+            }
+        }
+
+        buildConfigField("String", "API_KEY", "${localProperties["MOVIE_API_KEY"]}")
+        buildConfigField("String", "BASE_URL", "${localProperties["MOVIE_BASE_URL"]}")
+        buildConfigField("String", "IMG_URL", "${localProperties["MOVIE_IMG_URL"]}")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -25,15 +37,8 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField( "String", "API_KEY", "\"ce99ea84f89451260059c832125c6353\"")
-            buildConfigField( "String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
-            buildConfigField( "String", "IMG_URL", "\"https://image.tmdb.org/t/p/w500/\"")
         }
         release {
-            buildConfigField( "String", "API_KEY", "\"ce99ea84f89451260059c832125c6353\"")
-            buildConfigField( "String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
-            buildConfigField( "String", "IMG_URL", "\"https://image.tmdb.org/t/p/w500/\"")
-
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -95,7 +100,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.runtime.livedata)
-    annotationProcessor("com.google.dagger:hilt-compiler:2.46")
+    annotationProcessor(libs.hilt.compiler)
 
 
     testImplementation(libs.junit)
