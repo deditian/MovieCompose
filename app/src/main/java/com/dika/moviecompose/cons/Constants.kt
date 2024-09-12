@@ -1,14 +1,7 @@
 package com.dika.moviecompose.cons
 
 
-/**
- * Created by JJ date on 10/10/2023.
- * Bengkulu, Indonesia.
- * Copyright (c) Company. All rights reserved.
- **/
 object Constants {
-    const val ACCESS_TOKEN = ""
-    const val REFRESH_TOKEN = ""
     const val API_INTERNET_MESSAGE="No Internet Connection"
     const val API_SOMETHING_WENT_WRONG_MESSAGE="Something went wrong"
     const val API_FAILED_CODE="2222"
