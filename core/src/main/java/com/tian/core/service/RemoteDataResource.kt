@@ -1,4 +1,4 @@
-package com.dika.moviecompose.service
+package com.tian.core.service
 
 import javax.inject.Inject
 

@@ -14,8 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.dika.moviecompose.ui.home.HomeViewModel
 import com.dika.moviecompose.ui.theme.BottomNavigationBarTheme
+import com.dika.moviecompose.ui.home.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

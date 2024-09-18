@@ -1,7 +1,7 @@
-package com.dika.moviecompose.di
+package com.tian.core.di
 
-import com.dika.moviecompose.BuildConfig
-import com.dika.moviecompose.service.ApiService
+import com.tian.core.cons.BASE_URL
+import com.tian.core.service.ApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +18,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

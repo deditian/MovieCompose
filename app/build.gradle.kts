@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.konan.properties.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -17,17 +15,6 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
-        val localProperties = Properties().apply {
-            val localPropertiesFile = rootProject.file("secrets.properties")
-            if (localPropertiesFile.exists()) {
-                localPropertiesFile.inputStream().use { load(it) }
-            }
-        }
-
-        buildConfigField("String", "API_KEY", "${localProperties["MOVIE_API_KEY"]}")
-        buildConfigField("String", "BASE_URL", "${localProperties["MOVIE_BASE_URL"]}")
-        buildConfigField("String", "IMG_URL", "${localProperties["MOVIE_IMG_URL"]}")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -55,7 +42,6 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -71,6 +57,7 @@ android {
 
 
 dependencies {
+    implementation(project(":core"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -88,19 +75,11 @@ dependencies {
     implementation(libs.accompanist.pager.indicators)
     implementation(libs.coil.compose)
     implementation(libs.haze)
+    implementation(libs.androidx.runtime.livedata)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-    implementation (libs.converter.scalars)
-    implementation (libs.logging.interceptor)
     implementation(libs.kotlin.reflect)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.runtime.livedata)
-    annotationProcessor(libs.hilt.compiler)
 
 
     testImplementation(libs.junit)

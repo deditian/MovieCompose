@@ -1,4 +1,4 @@
-package com.dika.moviecompose.di
+package com.tian.core.di
 
 sealed class NetWorkResult <out T> (val status: ApiStatus, val data: T?, val message:String?) {
 

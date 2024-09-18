@@ -1,15 +1,11 @@
-package com.dika.moviecompose.network
+package com.dika.moviecompose.ui.network
 
 import android.util.Log
 import androidx.compose.runtime.Composable
-import com.dika.moviecompose.cons.Constants.API_FAILURE_CODE
-import com.dika.moviecompose.cons.Constants.API_INTERNET_CODE
-import com.dika.moviecompose.cons.Constants.API_INTERNET_MESSAGE
-import com.dika.moviecompose.cons.Constants.API_SOMETHING_WENT_WRONG_MESSAGE
-import com.dika.moviecompose.di.ApiStatus
-import com.dika.moviecompose.di.NetWorkResult
+import com.tian.core.cons.*
+import com.tian.core.di.ApiStatus
+import com.tian.core.di.NetWorkResult
 import kotlin.reflect.full.memberProperties
-
 
 
 @Composable
@@ -19,7 +15,6 @@ fun <T> ApiResultHandler(
     onSuccess: @Composable (T?) -> Unit,
     onFailure: @Composable (T?) -> Unit
 ) {
-    // Menangani hasil API berdasarkan status
     when (result.status) {
         ApiStatus.LOADING -> {
             onLoading()

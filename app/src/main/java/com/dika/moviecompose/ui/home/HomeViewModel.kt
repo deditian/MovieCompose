@@ -4,22 +4,23 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.dika.moviecompose.base.BaseViewModel
-import com.dika.moviecompose.di.NetWorkResult
-import com.dika.moviecompose.model.MovieRespone
-import com.dika.moviecompose.model.TvShowRespone
-import com.dika.moviecompose.repo.HomeRepository
+import com.tian.core.base.BaseViewModel
 
+import com.tian.core.di.NetWorkResult
+import com.tian.core.model.MovieRespone
+import com.tian.core.model.TvShowRespone
+import com.tian.core.repo.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: HomeRepository,
-                                        application: Application): BaseViewModel(application) {
+                                        application: Application):BaseViewModel(application) {
 
-    private val _response: MutableLiveData<NetWorkResult<MovieRespone>> = MutableLiveData()
-    private val _responseTV: MutableLiveData<NetWorkResult<TvShowRespone>> = MutableLiveData()
+    private val _response: MutableLiveData<  NetWorkResult<MovieRespone>> = MutableLiveData()
+    private val _responseTV: MutableLiveData<  NetWorkResult<TvShowRespone>> = MutableLiveData()
 
     val response: LiveData<NetWorkResult<MovieRespone>> = _response
     val responseTvPopular: LiveData<NetWorkResult<TvShowRespone>> = _responseTV

@@ -1,12 +1,10 @@
-package com.dika.moviecompose.service
+package com.tian.core.service
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.dika.moviecompose.cons.Constants.API_FAILED_CODE
-import com.dika.moviecompose.cons.Constants.API_INTERNET_CODE
-import com.dika.moviecompose.cons.Constants.API_INTERNET_MESSAGE
-import com.dika.moviecompose.di.NetWorkResult
+import com.tian.core.cons.*
+import com.tian.core.di.NetWorkResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

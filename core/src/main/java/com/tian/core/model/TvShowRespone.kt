@@ -1,4 +1,4 @@
-package com.dika.moviecompose.model
+package com.tian.core.model
 
 import com.google.gson.annotations.SerializedName
 

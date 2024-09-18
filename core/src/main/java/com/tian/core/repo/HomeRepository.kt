@@ -1,12 +1,13 @@
-package com.dika.moviecompose.repo
+package com.tian.core.repo
 
 import android.content.Context
-import com.dika.moviecompose.BuildConfig
-import com.dika.moviecompose.di.NetWorkResult
-import com.dika.moviecompose.model.MovieRespone
-import com.dika.moviecompose.model.TvShowRespone
-import com.dika.moviecompose.service.RemoteDataSource
-import com.dika.moviecompose.service.toResultFlow
+import com.tian.core.BuildConfig
+import com.tian.core.cons.API_KEY
+import com.tian.core.di.NetWorkResult
+import com.tian.core.model.MovieRespone
+import com.tian.core.model.TvShowRespone
+import com.tian.core.service.RemoteDataSource
+import com.tian.core.service.toResultFlow
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -16,14 +17,14 @@ class HomeRepository @Inject constructor(private val remoteDataSource: RemoteDat
 
     suspend fun getMovieNowPlaying(context: Context): Flow<NetWorkResult<MovieRespone>> {
         return toResultFlow(context){
-            remoteDataSource.getMovieNowPlaying(BuildConfig.API_KEY)
+            remoteDataSource.getMovieNowPlaying(API_KEY)
         }
     }
 
 
     suspend fun getTvPopular(context: Context): Flow<NetWorkResult<TvShowRespone>> {
         return toResultFlow(context){
-            remoteDataSource.getTvPopular(BuildConfig.API_KEY)
+            remoteDataSource.getTvPopular(API_KEY)
         }
     }
 

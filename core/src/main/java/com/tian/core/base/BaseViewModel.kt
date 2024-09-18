@@ -1,4 +1,4 @@
-package com.dika.moviecompose.base
+package com.tian.core.base
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

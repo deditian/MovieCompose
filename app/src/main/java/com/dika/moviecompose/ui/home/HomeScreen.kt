@@ -2,7 +2,6 @@ package com.dika.moviecompose.ui.home
 
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,25 +49,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.dika.moviecompose.BuildConfig
 import com.dika.moviecompose.R
-import com.dika.moviecompose.model.Movie
-import com.dika.moviecompose.model.MovieRespone
-import com.dika.moviecompose.model.TvShow
-import com.dika.moviecompose.network.ApiResultHandler
 import com.dika.moviecompose.util.formatDate
 import com.dika.moviecompose.util.textMax
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.tian.core.cons.IMG_URL
+import com.tian.core.model.Item
+import com.tian.core.model.TvShow
+import com.dika.moviecompose.ui.network.ApiResultHandler
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
-data class Item(val title: String, val imageRes: Int, val rating: Double)
 
 
 @Composable
@@ -79,7 +74,6 @@ fun HomeScreen(viewModel: HomeViewModel) {
         viewModel.getTvPopular()
     }
 
-    val hazeState = remember { HazeState() }
     Scaffold(
         topBar = {
             ToolbarMe(
@@ -347,7 +341,7 @@ fun AutoImageSlider(viewModel: HomeViewModel, onImageClick: (Int) -> Unit) {
                     }
 
                     val result = it?.results
-                    Log.e("TAG", "HomeScreen hasil:  ${it?.results}", )
+                    Log.e("TAG", "HomeScreen hasil:  ${it?.results}",)
                     // Pager for images
                     HorizontalPager(
                         count = it!!.results.size,
@@ -357,7 +351,7 @@ fun AutoImageSlider(viewModel: HomeViewModel, onImageClick: (Int) -> Unit) {
                             .height(200.dp)
                     ) { page ->
                         AsyncImage(
-                            model = "${BuildConfig.IMG_URL}${result?.get(page)?.backdrop_path}",
+                            model = "${IMG_URL}${result?.get(page)?.backdrop_path}",
                             contentDescription = result?.get(page)?.original_title,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -373,13 +367,19 @@ fun AutoImageSlider(viewModel: HomeViewModel, onImageClick: (Int) -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(top = 10.dp)
                     ) {
-                        Text(text = currentImage!!.title, style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            text = currentImage!!.title,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                         RatingStars(voteAverage = currentImage.vote_average)
-                        Text(text = "Release Date: ${formatDate(currentImage.release_date)}", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = "Release Date: ${formatDate(currentImage.release_date)}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 },
                 onFailure = {
-                    Log.e("TAG", "HomeScreen failed:  ${it?.status_message}", )
+                    Log.e("TAG", "HomeScreen failed:  ${it?.status_message}",)
                 }
             )
         }
@@ -454,7 +454,7 @@ fun GridItem(item: TvShow, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = "${BuildConfig.IMG_URL}${item.posterPath}",
+            model = "${IMG_URL}${item.posterPath}",
             contentDescription = item.title,
             modifier = Modifier
                 .size(120.dp)

@@ -1,4 +1,4 @@
-package com.dika.moviecompose.model
+package com.tian.core.model
 
 data class MovieRespone(
     val status_message : String,
