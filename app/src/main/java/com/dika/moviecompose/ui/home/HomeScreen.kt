@@ -58,193 +58,194 @@ import com.google.accompanist.pager.HorizontalPager
 import com.tian.core.cons.IMG_URL
 import com.tian.core.model.Item
 import com.tian.core.model.TvShow
-import com.dika.moviecompose.ui.network.ApiResultHandler
+import com.dika.moviecompose.util.ApiResultHandler
+import com.tian.core.model.ImageData
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+class HomeScreenComposable(
+    private val viewModel: HomeViewModel
+) {
+    @Composable
+    fun HomeScreen() {
+        LaunchedEffect(Unit) {
+            viewModel.getMovieNowPlaying()
+            viewModel.getTvPopular()
+        }
 
-@Composable
-fun HomeScreen(viewModel: HomeViewModel) {
-
-    LaunchedEffect(Unit) {
-        viewModel.getMovieNowPlaying()
-        viewModel.getTvPopular()
+        Scaffold(
+            topBar = {
+                ToolbarMe(
+                    cityName = "Jakarta",
+                    onLogoClick = {
+                        println("App logo clicked!")
+                    },
+                    onSearchClick = {
+                        println("Search icon clicked!")
+                    }
+                )
+            }
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                HomeUI()
+            }
+        }
     }
 
-    Scaffold(
-        topBar = {
-            ToolbarMe(
-                cityName = "Jakarta",
-                onLogoClick = {
-                    println("App logo clicked!")
-                },
-                onSearchClick = {
-                    println("Search icon clicked!")
-                }
+
+
+
+    @Composable
+    private fun HomeUI(){
+        val images = listOf(
+            ImageData(R.drawable.ic_star_popular, "Image 1", 4.5),
+            ImageData(R.drawable.ic_star_popular, "Image 2", 3.8),
+            ImageData(R.drawable.ic_star_popular, "Image 3", 4.2),
+            ImageData(R.drawable.ic_star_popular, "Image 4", 5.0),
+            ImageData(R.drawable.ic_star_popular, "Image 5", 3.6)
+        )
+
+        val items = listOf(
+            Item("Item 1", R.drawable.ic_image, 4.5),
+            Item("Item 2", R.drawable.ic_image, 3.8),
+            Item("Item 3", R.drawable.ic_image, 4.2),
+            Item("Item 4", R.drawable.ic_image, 5.0),
+            Item("Item 5", R.drawable.ic_image, 3.6)
+        )
+
+
+        val sampleItems = listOf(
+            ItemMenu(
+                imageUrl = R.drawable.ic_movie,
+                title = "Movies"
+            ),
+            ItemMenu(
+                imageUrl = R.drawable.ic_food,
+                title = "m.food"
+            ),
+            ItemMenu(
+                imageUrl = R.drawable.ic_cinema,
+                title = "Cinema"
+            ),
+            ItemMenu(
+                imageUrl = R.drawable.ic_booking,
+                title = "Private\nBooking"
             )
-        }
-    ) {
-        Surface(
+        )
+
+
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
-            color = MaterialTheme.colorScheme.background
+                .verticalScroll(state = rememberScrollState())
         ) {
-            HomeUI(viewModel)
-        }
 
-    }
+            Spacer(modifier = Modifier.height(5.dp))
 
+            Text(text = "Afternoon, Deditian",
+                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(horizontal = 16.dp))
 
-}
-
-@Composable
-fun HomeUI(viewModel: HomeViewModel){
-
-    val images = listOf(
-        ImageData(R.drawable.ic_star_popular, "Image 1", 4.5),
-        ImageData(R.drawable.ic_star_popular, "Image 2", 3.8),
-        ImageData(R.drawable.ic_star_popular, "Image 3", 4.2),
-        ImageData(R.drawable.ic_star_popular, "Image 4", 5.0),
-        ImageData(R.drawable.ic_star_popular, "Image 5", 3.6)
-    )
-
-    val items = listOf(
-        Item("Item 1", R.drawable.ic_image, 4.5),
-        Item("Item 2", R.drawable.ic_image, 3.8),
-        Item("Item 3", R.drawable.ic_image, 4.2),
-        Item("Item 4", R.drawable.ic_image, 5.0),
-        Item("Item 5", R.drawable.ic_image, 3.6)
-    )
+            Spacer(modifier = Modifier.height(16.dp))
 
 
-    val sampleItems = listOf(
-        ItemMenu(
-            imageUrl = R.drawable.ic_movie,
-            title = "Movies"
-        ),
-        ItemMenu(
-            imageUrl = R.drawable.ic_food,
-            title = "m.food"
-        ),
-        ItemMenu(
-            imageUrl = R.drawable.ic_cinema,
-            title = "Cinema"
-        ),
-        ItemMenu(
-            imageUrl = R.drawable.ic_booking,
-            title = "Private\nBooking"
-        )
-    )
-
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(state = rememberScrollState())
-    ) {
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        Text(text = "Afternoon, Deditian",
-            fontSize = 16.sp,
-             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-             modifier = Modifier.padding(horizontal = 16.dp))
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        MenuIcon(sampleItems)
+            MenuIcon(sampleItems)
 
 
 
 
-        AutoImageSlider(
-            viewModel = viewModel,
-            onImageClick = { clickedImageIndex ->
-                println("Image clicked: Index $clickedImageIndex")
-            }
-        )
-
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(230.dp)) {
-            GridItemList(
-                viewModel,
-                onItemClick = { selectedItem ->
-                    println("Item clicked: ${selectedItem.title}")
+            AutoImageSlider(
+                viewModel = viewModel,
+                onImageClick = { clickedImageIndex ->
+                    println("Image clicked: Index $clickedImageIndex")
                 }
             )
+
+
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(230.dp)) {
+                GridItemList(
+                    viewModel,
+                    onItemClick = { selectedItem ->
+                        println("Item clicked: ${selectedItem.title}")
+                    }
+                )
+            }
+
+
         }
-
-
     }
-}
 
 
 
-data class ItemMenu(val imageUrl: Int, val title: String)
+    data class ItemMenu(val imageUrl: Int, val title: String)
 
-@Composable
-fun MenuIcon(itemMenu: List<ItemMenu>) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(itemMenu) { item ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .height(115.dp),
-            ) {
-                Box(
+    @Composable
+    private fun MenuIcon(itemMenu: List<ItemMenu>) {
+        LazyRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(itemMenu) { item ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .size(50.dp)
-                        .background(Color.LightGray, shape = CircleShape),
-                    contentAlignment = Alignment.Center
+                        .padding(start = 16.dp)
+                        .height(115.dp),
                 ) {
-                    Image(
-                        painter = painterResource(id = item.imageUrl),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .background(Color.LightGray, shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = item.imageUrl),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = item.title,
-                        fontSize = 13.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = item.title,
+                            fontSize = 13.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
     }
-}
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ToolbarMe(
-    cityName: String,
-    onLogoClick: () -> Unit,
-    onSearchClick: () -> Unit
-) {
-    val hazeState = remember { HazeState() }
-    TopAppBar(
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ToolbarMe(
+        cityName: String,
+        onLogoClick: () -> Unit,
+        onSearchClick: () -> Unit
+    ) {
+        val hazeState = remember { HazeState() }
+        TopAppBar(
             title = {
 
             },
@@ -278,221 +279,218 @@ fun ToolbarMe(
             },
         )
 
-}
+    }
 
 
-data class ImageData(val imageRes: Int, val title: String, val rating: Double)
-
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun AutoImageSlider(viewModel: HomeViewModel, onImageClick: (Int) -> Unit) {
-    val pagerState = com.google.accompanist.pager.rememberPagerState()
-    val coroutineScope = rememberCoroutineScope()
+    @OptIn(ExperimentalPagerApi::class)
+    @Composable
+    private fun AutoImageSlider(viewModel: HomeViewModel, onImageClick: (Int) -> Unit) {
+        val pagerState = com.google.accompanist.pager.rememberPagerState()
+        val coroutineScope = rememberCoroutineScope()
 
 
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "Now Playing",
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            Text(
-                text = "See All",
-                fontSize = 12.sp,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
 
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Now Playing",
+                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
 
-        val movieResponse by viewModel.response.observeAsState()
-        movieResponse?.let { response ->
-            ApiResultHandler(
-                result = response,
-                onLoading = {
-                    CircularProgressIndicator()
-                },
-                onSuccess = {
-                    LaunchedEffect(Unit) {
-                        while (true) {
-                            delay(3000)
-                            coroutineScope.launch {
-                                val nextPage = (pagerState.currentPage + 1) % it!!.results.size
-                                pagerState.animateScrollToPage(nextPage)
+                Text(
+                    text = "See All",
+                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            val movieResponse by viewModel.response.observeAsState()
+            movieResponse?.let { response ->
+                ApiResultHandler(
+                    result = response,
+                    onLoading = {
+                        CircularProgressIndicator()
+                    },
+                    onSuccess = {
+                        LaunchedEffect(Unit) {
+                            while (true) {
+                                delay(3000)
+                                coroutineScope.launch {
+                                    val nextPage = (pagerState.currentPage + 1) % it!!.results.size
+                                    pagerState.animateScrollToPage(nextPage)
+                                }
                             }
                         }
-                    }
 
-                    val result = it?.results
-                    Log.e("TAG", "HomeScreen hasil:  ${it?.results}",)
-                    // Pager for images
-                    HorizontalPager(
-                        count = it!!.results.size,
-                        state = pagerState,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) { page ->
-                        AsyncImage(
-                            model = "${IMG_URL}${result?.get(page)?.backdrop_path}",
-                            contentDescription = result?.get(page)?.original_title,
+                        val result = it?.results
+                        Log.e("TAG", "HomeScreen hasil:  ${it?.results}",)
+                        // Pager for images
+                        HorizontalPager(
+                            count = it!!.results.size,
+                            state = pagerState,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(250.dp)
-                                .clickable { onImageClick(page) },
-                            contentScale = ContentScale.FillWidth
-                        )
-                    }
+                                .height(200.dp)
+                        ) { page ->
+                            AsyncImage(
+                                model = "${IMG_URL}${result?.get(page)?.backdrop_path}",
+                                contentDescription = result?.get(page)?.original_title,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(250.dp)
+                                    .clickable { onImageClick(page) },
+                                contentScale = ContentScale.FillWidth
+                            )
+                        }
 
-                    // Title and Rating
-                    val currentImage = result?.get(pagerState.currentPage)
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(top = 10.dp)
-                    ) {
-                        Text(
-                            text = currentImage!!.title,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        RatingStars(voteAverage = currentImage.vote_average)
-                        Text(
-                            text = "Release Date: ${formatDate(currentImage.release_date)}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        // Title and Rating
+                        val currentImage = result?.get(pagerState.currentPage)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(top = 10.dp)
+                        ) {
+                            Text(
+                                text = currentImage!!.title,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            RatingStars(voteAverage = currentImage.vote_average)
+                            Text(
+                                text = "Release Date: ${formatDate(currentImage.release_date)}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    },
+                    onFailure = {
+                        Log.e("TAG", "HomeScreen failed:  ${it?.status_message}",)
                     }
-                },
-                onFailure = {
-                    Log.e("TAG", "HomeScreen failed:  ${it?.status_message}",)
-                }
-            )
+                )
+            }
+
+
         }
-
-
     }
-}
 
-@Composable
-fun GridItemList(viewModel: HomeViewModel, onItemClick: (TvShow) -> Unit) {
-    Column {
+    @Composable
+    private fun GridItemList(viewModel: HomeViewModel, onItemClick: (TvShow) -> Unit) {
+        Column {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Coming soon to XX",
+                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+
+                Text(
+                    text = "See All",
+                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+
+            val tvResponse by viewModel.responseTvPopular.observeAsState()
+            tvResponse?.let { response ->
+                ApiResultHandler(
+                    result = response,
+                    onLoading = {
+                        CircularProgressIndicator()
+                    },
+                    onSuccess = {
+                        Log.e("TAG", "GridItemList: ${it?.results}", )
+
+                        LazyHorizontalGrid(
+                            rows = GridCells.Fixed(1),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(it!!.results) { item ->
+                                GridItem(
+                                    item = item,
+                                    onClick = { onItemClick(item) })
+                            }
+                        }
+                    },
+                    onFailure = {
+
+                    }
+                )
+            }
+
+        }
+    }
+
+    @Composable
+    private fun GridItem(item: TvShow, onClick: () -> Unit) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable { onClick() },
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AsyncImage(
+                model = "${IMG_URL}${item.posterPath}",
+                contentDescription = item.title,
+                modifier = Modifier
+                    .size(120.dp)
+                    .padding(bottom = 8.dp),
+                contentScale = ContentScale.FillWidth
+            )
+            Log.e("TAG", "GridItem:COYY ${item.title}", )
+            Text(text = textMax(item.title!!), style = MaterialTheme.typography.bodyLarge)
+            RatingStars(voteAverage = item.voteAverage!!)
+        }
+    }
+
+    @Composable
+    private fun RatingStars(voteAverage: Float) {
+        val maxStars = 5
+        val filledStars = (voteAverage / 2).toInt() // Kalkulasi bintang yang diisi
+        val remainingStars = maxStars - filledStars // Sisa bintang yang tidak diisi
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Coming soon to XX",
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+            repeat(filledStars) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = "Filled Star",
+                    tint = Color.Cyan,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
 
-            Text(
-                text = "See All",
-                fontSize = 12.sp,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(2.dp))
-
-
-        val tvResponse by viewModel.responseTvPopular.observeAsState()
-        tvResponse?.let { response ->
-            ApiResultHandler(
-                result = response,
-                onLoading = {
-                    CircularProgressIndicator()
-                },
-                onSuccess = {
-                    Log.e("TAG", "GridItemList: ${it?.results}", )
-
-                    LazyHorizontalGrid(
-                        rows = GridCells.Fixed(1),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(it!!.results) { item ->
-                            GridItem(
-                                item = item,
-                                onClick = { onItemClick(item) })
-                        }
-                    }
-                },
-                onFailure = {
-
-                }
-            )
-        }
-
-    }
-}
-
-@Composable
-fun GridItem(item: TvShow, onClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .clickable { onClick() },
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        AsyncImage(
-            model = "${IMG_URL}${item.posterPath}",
-            contentDescription = item.title,
-            modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 8.dp),
-            contentScale = ContentScale.FillWidth
-        )
-        Log.e("TAG", "GridItem:COYY ${item.title}", )
-        Text(text = textMax(item.title!!), style = MaterialTheme.typography.bodyLarge)
-        RatingStars(voteAverage = item.voteAverage!!)
-    }
-}
-
-@Composable
-fun RatingStars(voteAverage: Float) {
-    val maxStars = 5
-    val filledStars = (voteAverage / 2).toInt() // Kalkulasi bintang yang diisi
-    val remainingStars = maxStars - filledStars // Sisa bintang yang tidak diisi
-
-    Row(
-        modifier = Modifier.padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        repeat(filledStars) {
-            Icon(
-                imageVector = Icons.Filled.Star,
-                contentDescription = "Filled Star",
-                tint = Color.Cyan,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-
-        repeat(remainingStars) {
-            Icon(
-                imageVector = Icons.Filled.Star,
-                contentDescription = "Empty Star",
-                tint = Color.Gray,
-                modifier = Modifier.size(24.dp)
-            )
+            repeat(remainingStars) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = "Empty Star",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.dika.moviecompose.ui.network
+package com.dika.moviecompose.util
 
 import android.util.Log
 import androidx.compose.runtime.Composable
