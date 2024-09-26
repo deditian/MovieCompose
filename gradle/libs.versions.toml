@@ -1,6 +1,6 @@
 [versions]
 accompanistPagerIndicators = "0.25.1"
-agp = "8.4.1"
+agp = "8.6.1"
 coilCompose = "2.3.0"
 converterScalars = "2.9.0"
 haze = "0.9.0-alpha08"
